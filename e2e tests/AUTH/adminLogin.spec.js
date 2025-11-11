@@ -7,6 +7,23 @@ const fixtureData = require("../../fixtures/adminLoginData.json");
 const config = require("../../playwright.config.js");
 const BASE_URL = config.use?.BASE_URL;
 
+const authHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`,
+});
+
+const postAdminLogin = (request, data) =>
+  request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
+    data,
+    headers: authHeaders(),
+  });
+
+const loginRequest = async (request, data, expectedStatus) => {
+  const response = await postAdminLogin(request, data);
+  expect(response.status()).toBe(expectedStatus);
+  return response.json();
+};
+
 test.describe("Admin Login Tests", () => {
 
   // 1.1
@@ -16,17 +33,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.2
   test("Valid Email and invalid size of Password", async ({ request }) => {
-    const Data = fixtureData.jsonData[1];
+    const data = fixtureData.jsonData[1];
 
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(400);
+    const responseBody = await loginRequest(request, data, 400);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: expect.arrayContaining(["password must be longer than or equal to 6 characters"]),
@@ -38,17 +47,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.3
   test("Sign in using invalid credentials", async ({ request }) => {
-    const Data = fixtureData.jsonData[2];
+    const data = fixtureData.jsonData[2];
 
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(401);
+    const responseBody = await loginRequest(request, data, 401);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: "Incorrect email or password",
@@ -60,16 +61,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.4
   test("Invalid email and valid password", async ({ request }) => {
-    const Data = fixtureData.jsonData[3];
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(400);
+    const data = fixtureData.jsonData[3];
+
+    const responseBody = await loginRequest(request, data, 400);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: expect.arrayContaining(["email must be an email"]),
@@ -81,16 +75,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.5
   test("Valid email end incorrect password", async ({ request }) => {
-    const Data = fixtureData.jsonData[4];
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(401);
+    const data = fixtureData.jsonData[4];
+
+    const responseBody = await loginRequest(request, data, 401);
     expect(responseBody).toMatchObject({
       message: "Incorrect email or password",
       error: "Unauthorized",
@@ -100,16 +87,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.6
   test("email missing field", async ({ request }) => {
-    const Data = fixtureData.jsonData[5];
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(400);
+    const data = fixtureData.jsonData[5];
+
+    const responseBody = await loginRequest(request, data, 400);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: expect.arrayContaining([
@@ -126,16 +106,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.7
   test("Password missing field", async ({ request }) => {
-    const Data = fixtureData.jsonData[6];
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(400);
+    const data = fixtureData.jsonData[6];
+
+    const responseBody = await loginRequest(request, data, 400);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: expect.arrayContaining([
@@ -152,15 +125,7 @@ test.describe("Admin Login Tests", () => {
 
   // 1.8
   test("Empty request body", async ({ request }) => {
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: {},
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(400);
+    const responseBody = await loginRequest(request, {}, 400);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: expect.arrayContaining([
@@ -180,16 +145,9 @@ test.describe("Admin Login Tests", () => {
 
   // 1.9
   test("SQL Injection or Malicious Input", async ({ request }) => {
-    const Data = fixtureData.jsonData[7];
-    const response = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-      data: Data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`
-      }
-    });
-    const responseBody = await response.json();
-    expect(response.status()).toBe(400);
+    const data = fixtureData.jsonData[7];
+
+    const responseBody = await loginRequest(request, data, 400);
     expect(responseBody).toEqual(
       expect.objectContaining({
         message: expect.arrayContaining([
