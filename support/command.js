@@ -1,30 +1,29 @@
-import { test as base, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { ADMIN_LOGIN } from '../support/apiConstants.js';
-import { fixtureData } from '../fixtures/adminLoginData.json';
 
 const config = require('../playwright.config.js');
 const BASE_URL = config.use?.BASE_URL;
+const adminLoginData = require('../fixtures/adminLoginData.json');
 
+async function super_admin_login(request, baseUrl = BASE_URL) {
+  const { email, password } = adminLoginData.jsonData[0];
 
-async function super_admin_login(request, baseUrl) {
-
-  const adminLoginData = require('../fixtures/adminLoginData.json');
-  const data = adminLoginData.jsonData[0];
-  console.log('Admin Login Data:', data);
   const response = await request.post(`${baseUrl}${ADMIN_LOGIN}`, {
-    data: {
-      email: data.email,
-      password: data.password,
-    },
+    data: { email, password },
     headers: {
       'Content-Type': 'application/json',
     },
   });
 
+  expect(response.ok()).toBeTruthy();
+
   const responseBody = await response.json();
-  console.log('Response body:', responseBody);
-  expect(responseBody).toHaveProperty('accessToken');
-  expect(responseBody).toHaveProperty('searchToken');
+  expect(responseBody).toEqual(
+    expect.objectContaining({
+      accessToken: expect.any(String),
+      searchToken: expect.any(String),
+    }),
+  );
 
   const superAdminAccessToken = responseBody.accessToken;
   process.env.SUPER_ADMIN_ACCESS_TOKEN = superAdminAccessToken;
