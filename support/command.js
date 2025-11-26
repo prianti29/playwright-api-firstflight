@@ -25,9 +25,9 @@ async function super_admin_login(request, baseUrl = BASE_URL) {
     }),
   );
 
-  const superAdminAccessToken = responseBody.accessToken;
-  process.env.SUPER_ADMIN_ACCESS_TOKEN = superAdminAccessToken;
-  return superAdminAccessToken;
+  const accessToken = responseBody.accessToken;
+  process.env.SUPER_ADMIN_ACCESS_TOKEN = accessToken;
+  return accessToken;
 }
 
-module.exports = { super_admin_login };
+export { super_admin_login };
