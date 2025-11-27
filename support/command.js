@@ -1,9 +1,9 @@
 import { expect } from '@playwright/test';
 import { ADMIN_LOGIN } from '../support/apiConstants.js';
+import config from '../playwright.config.js';
+import adminLoginData from '../fixtures/AUTH/adminLoginData.json' assert { type: 'json' };
 
-const config = require('../playwright.config.js');
 const BASE_URL = config.use?.BASE_URL;
-const adminLoginData = require('../fixtures/adminLoginData.json');
 
 async function super_admin_login(request, baseUrl = BASE_URL) {
   const { email, password } = adminLoginData.jsonData[0];
