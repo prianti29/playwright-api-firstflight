@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { ADMIN_LOGIN } from '../support/apiConstants.js';
 import config from '../playwright.config.js';
-import adminLoginData from '../fixtures/AUTH/adminLoginData.json' assert { type: 'json' };
+import adminLoginData from '../fixtures/AUTH/adminLoginData.js';
 
 const BASE_URL = config.use?.BASE_URL;
 
