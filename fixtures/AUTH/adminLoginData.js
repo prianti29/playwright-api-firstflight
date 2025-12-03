@@ -1,51 +1,67 @@
+// Test data constants
+const VALID_EMAIL = "rezwankabirrobin@gmail.com";
+const VALID_PASSWORD = "11111111";
+const INVALID_EMAIL_1 = "john@gmail.com";
+const INVALID_EMAIL_2 = "robin.rezwan";
+const VALID_EMAIL_2 = "robin.rezwan@gmail.com";
+const DEFAULT_PASSWORD = "12345678";
+const SHORT_PASSWORD = "2656";
+const WRONG_PASSWORD = "123456";
+const INVALID_PASSWORD = "asfrasdf";
+
+// Test case data organized by scenario
+const testCases = {
+     // Valid credentials - Test 1.1 (Note: Test 1.1 uses super_admin_login helper)
+     validCredentials: {
+          email: VALID_EMAIL,
+          password: VALID_PASSWORD,
+     },
+     // Short password - Test 1.2
+     shortPassword: {
+          email: VALID_EMAIL,
+          password: SHORT_PASSWORD,
+     },
+     // Invalid credentials - Test 1.3
+     invalidCredentials: {
+          email: INVALID_EMAIL_1,
+          password: WRONG_PASSWORD,
+     },
+     // Invalid email format - Test 1.4
+     invalidEmailFormat: {
+          email: INVALID_EMAIL_2,
+          password: DEFAULT_PASSWORD,
+     },
+     // Valid email with incorrect password - Test 1.5
+     validEmailWrongPassword: {
+          email: VALID_EMAIL_2,
+          password: INVALID_PASSWORD,
+     },
+     // Missing email - Test 1.6
+     missingEmail: {
+          password: DEFAULT_PASSWORD,
+     },
+     // Missing password - Test 1.7
+     missingPassword: {
+          email: VALID_EMAIL,
+     },
+     // SQL injection attempt - Test 1.9
+     sqlInjection: {
+          email: "' OR '1'='1",
+          password: DEFAULT_PASSWORD,
+     },
+};
+
+// Export in original format for backward compatibility
 export default {
      jsonData: [
-          {
-               // index - 0
-               // Test - 1.1
-               email: "rezwankabirrobin@gmail.com",
-               password: "11111111",
-          },
-          {
-               // index - 1
-               // Test - 1.2
-               email: "rezwankabirrobin@gmail.com",
-               password: "2656",
-          },
-          {
-               // index - 2
-               // Test - 1.3
-               email: "john@gmail.com",
-               password: "123456",
-          },
-          {
-               // index - 3
-               // Test - 1.4
-               email: "robin.rezwan",
-               password: "12345678",
-          },
-          {
-               // index - 4
-               // Test - 1.5
-               email: "robin.rezwan@gmail.com",
-               password: "asfrasdf",
-          },
-          {
-               // index - 5
-               // Test - 1.6
-               password: "12345678",
-          },
-          {
-               // index - 6
-               // Test - 1.7
-               email: "rezwankabirrobin@gmail.com",
-          },
-          {
-               // index - 7
-               // Test - 1.9
-               email: "' OR '1'='1",
-               password: "12345678",
-          },
+          testCases.validCredentials,        // index 0 - Test 1.1
+          testCases.shortPassword,            // index 1 - Test 1.2
+          testCases.invalidCredentials,       // index 2 - Test 1.3
+          testCases.invalidEmailFormat,       // index 3 - Test 1.4
+          testCases.validEmailWrongPassword,  // index 4 - Test 1.5
+          testCases.missingEmail,             // index 5 - Test 1.6
+          testCases.missingPassword,          // index 6 - Test 1.7
+          testCases.sqlInjection,             // index 7 - Test 1.9
      ],
 };
 
