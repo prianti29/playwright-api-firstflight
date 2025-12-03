@@ -16,7 +16,7 @@ This repository contains an API-focused test suite built with **Playwright Test*
   - `sellerSignUpData.js`
 - **`support/`**
   - `apiConstants.js` – API endpoint constants
-  - `command.js` – reusable helper functions (e.g. `super_admin_login`, `default_seller_signin`, `seller_signin_for_staff_store`)
+  - `command.js` – reusable helper functions
   - `e2e.js` – (reserved for shared e2e helpers)
 - **`playwright.config.js`** – Playwright configuration
 - **`playwright-report/`** – HTML reports (generated)
@@ -92,22 +92,6 @@ npx playwright test "e2e tests/AUTH/sellerSignInForStore.spec.js"
 ```
 
 > On Windows PowerShell, always **quote the path** so it’s treated as a single argument and valid regex.
-
----
-
-## Helper Commands (support/command.js)
-
-- **`super_admin_login(request, baseUrl?)`**
-  - Logs in as super admin
-  - Sets `process.env.SUPER_ADMIN_ACCESS_TOKEN`
-- **`default_seller_signin(request, baseUrl?)`**
-  - Logs in as default seller
-  - Sets `process.env.SELLER_ACCESS_TOKEN`
-- **`seller_signin_for_staff_store(request, baseUrl?)`**
-  - Logs a seller in for a specific store (`SELLER_SIGNIN_FOR_STORE/:storeId`)
-  - Uses `SELLER_ACCESS_TOKEN` for authorization
-
-These helpers are intended to be called from tests to avoid duplicating request setup logic.
 
 ---
 
