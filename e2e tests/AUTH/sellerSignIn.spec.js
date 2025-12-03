@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { SELLER_SIGNIN } from "../../support/apiConstants.js";
+import { default_seller_signin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import fixtureData from "../../fixtures/AUTH/sellerSignIn.js";
 
@@ -23,21 +24,7 @@ const signInRequest = async (request, data, expectedStatus) => {
 test.describe("Seller Sign in Test Suite", () => {
      // 3.1
      test("valid seller sign up firstname, lastname, password and invalid email", async ({ request }) => {
-          const data = fixtureData.jsonData[0];
-          const responseBody = await signInRequest(request, data, 200);
-          expect(responseBody).toEqual(
-               expect.objectContaining({
-                    accessToken: expect.any(String),
-                    searchToken: expect.any(String),
-                    expiresAt: expect.any(String),
-               })
-          );
-          expect(responseBody.accessToken.trim()).not.toBe("");
-          expect(responseBody.searchToken.trim()).not.toBe("");
-
-          const expires = new Date(responseBody.expiresAt);
-          expect(Number.isNaN(expires.getTime())).toBe(false);
-          expect(expires.toISOString()).toBe(responseBody.expiresAt);
+          await default_seller_signin(request, BASE_URL);
      });
 
      //3.2
