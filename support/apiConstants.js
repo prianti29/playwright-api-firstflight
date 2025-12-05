@@ -1,9 +1,18 @@
-// AUTH
-const API_ENDPOINTS = {
+// AUTH API ENDPOINTS
+const AUTH_API_ENDPOINTS = {
     ADMIN_LOGIN: '/auth/admins/signin',
     SELLER_SIGNUP: '/auth/sellers/signup',
     SELLER_SIGNIN: '/auth/sellers/signin',
-    SELLER_SIGNIN_FOR_STORE: '/auth/sellers/signin/stores'
+    SELLER_SIGNIN_FOR_STORE: '/auth/sellers/signin/stores',
+
 };
 
-export const { ADMIN_LOGIN, SELLER_SIGNUP, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE } = API_ENDPOINTS;
+//ADMIN API ENDPOINTS
+const ADMIN_API_ENDPOINTS = {
+    SUPER_ADMIN_CREATE: '/admins/super',
+
+
+};
+
+export const { ADMIN_LOGIN, SELLER_SIGNUP, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE } = AUTH_API_ENDPOINTS;
+export const { SUPER_ADMIN_CREATE } = ADMIN_API_ENDPOINTS;

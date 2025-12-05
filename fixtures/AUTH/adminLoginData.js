@@ -11,7 +11,7 @@ const INVALID_PASSWORD = "asfrasdf";
 
 // Test case data organized by scenario
 const testCases = {
-     // Valid credentials - Test 1.1 (Note: Test 1.1 uses super_admin_login helper)
+     // Valid credentials - Test 1.1
      validCredentials: {
           email: VALID_EMAIL,
           password: VALID_PASSWORD,
