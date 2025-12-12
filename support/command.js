@@ -1,8 +1,9 @@
 import { expect } from '@playwright/test';
-import { ADMIN_LOGIN, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE } from '../support/apiConstants.js';
+import { ADMIN_LOGIN, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE, ADMINS } from '../support/apiConstants.js';
 import config from '../playwright.config.js';
 import adminLoginData from '../fixtures/AUTH/adminLoginData.js';
 import sellerSignInData from '../fixtures/AUTH/sellerSignIn.js';
+import { faker } from '@faker-js/faker';
 
 const BASE_URL = config.use?.BASE_URL;
 
@@ -83,4 +84,96 @@ async function seller_signin_for_staff_store(request, baseUrl = BASE_URL) {
   return accessToken;
 }
 
-export { super_admin_login, default_seller_signin, seller_signin_for_staff_store };
+async function create_admin(request, baseUrl = BASE_URL, adminData = null) {
+  const data = adminData || {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password({ length: 8 }),
+    designation: faker.person.jobTitle(),
+    permissions: ["admins_read", "admins_write"]
+  };
+
+  const response = await request.post(`${baseUrl}${ADMINS}`, {
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`,
+    },
+  });
+
+  expect(response.status()).toBe(200);
+
+  const responseBody = await response.json();
+  expect(responseBody).toEqual(
+    expect.objectContaining({
+      id: expect.any(String),
+      firstName: expect.any(String),
+      lastName: expect.any(String),
+      designation: expect.any(String),
+      email: expect.any(String),
+      permissions: expect.any(Array),
+      isActive: expect.any(Boolean),
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String)
+    })
+  );
+
+  return responseBody;
+}
+
+async function create_admin_without_permissions(request, baseUrl = BASE_URL, adminData = null) {
+  const data = adminData || {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password({ length: 8 }),
+    designation: faker.person.jobTitle(),
+    permissions: ["files_read"]
+  };
+
+  const response = await request.post(`${baseUrl}${ADMINS}`, {
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.SUPER_ADMIN_ACCESS_TOKEN}`,
+    },
+  });
+
+  expect(response.status()).toBe(200);
+
+  const responseBody = await response.json();
+  expect(responseBody).toEqual(
+    expect.objectContaining({
+      id: expect.any(String),
+      firstName: expect.any(String),
+      lastName: expect.any(String),
+      designation: expect.any(String),
+      email: expect.any(String),
+      permissions: expect.any(Array),
+      isActive: expect.any(Boolean),
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String)
+    })
+  );
+
+  // Login as the created admin to get access token
+  const loginResponse = await request.post(`${baseUrl}${ADMIN_LOGIN}`, {
+    data: { email: responseBody.email, password: data.password },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  expect(loginResponse.ok()).toBeTruthy();
+  const loginBody = await loginResponse.json();
+  const accessToken = loginBody.accessToken;
+
+  // Return both admin data and access token
+  return {
+    ...responseBody,
+    accessToken: accessToken
+  };
+}
+
+export { super_admin_login, default_seller_signin, seller_signin_for_staff_store, create_admin, create_admin_without_permissions };

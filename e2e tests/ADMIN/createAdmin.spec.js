@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS } from "../../support/apiConstants.js";
-import { super_admin_login } from "../../support/command.js";
+import { super_admin_login, create_admin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import fixtureData from "../../fixtures/ADMIN/createAdminData.js";
 import { faker } from "@faker-js/faker";
@@ -31,30 +31,7 @@ test.describe("Create Admin Tests", () => {
 
      // 2.1
      test("Create Admin with valid credential", async ({ request }) => {
-          const data = {
-               firstName: faker.person.firstName(),
-               lastName: faker.person.lastName(),
-               email: faker.internet.email(),
-               password: faker.internet.password({ length: 8 }),
-               designation: faker.person.jobTitle(),
-               permissions: ["admins_read", "admins_write"]
-          };
-          const responseBody = await createRequest(request, data, 200);
-          // Validate response body structure and all required fields
-          expect(responseBody).toEqual(
-               expect.objectContaining({
-                    id: expect.any(String),
-                    firstName: expect.any(String),
-                    lastName: expect.any(String),
-                    designation: expect.any(String),
-                    email: expect.any(String),
-                    permissions: expect.any(Array),
-                    isActive: expect.any(Boolean),
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String)
-
-               })
-          );
+          await create_admin(request, BASE_URL);
      });
 
      // 2.2
