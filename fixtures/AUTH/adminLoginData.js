@@ -49,6 +49,10 @@ const testCases = {
           email: "' OR '1'='1",
           password: DEFAULT_PASSWORD,
      },
+     currentAdminLogin: {
+          email: "current.admin@gmail.com",
+          password: "12345678",
+     },
 };
 
 // Export in original format for backward compatibility
@@ -62,6 +66,7 @@ export default {
           testCases.missingEmail,             // index 5 - Test 1.6
           testCases.missingPassword,          // index 6 - Test 1.7
           testCases.sqlInjection,             // index 7 - Test 1.9
+          testCases.currentAdminLogin,         // index 8 - Test current admin login
      ],
 };
 

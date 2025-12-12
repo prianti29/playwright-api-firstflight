@@ -27,6 +27,7 @@ const deleteRequest = async (request, adminId, expectedStatus) => {
 test.describe("Delete Admin Tests", () => {
      test.beforeEach(async ({ request }) => {
           await super_admin_login(request, BASE_URL);
+
      });
 
      // 3.1
@@ -166,6 +167,7 @@ test.describe("Delete Admin Tests", () => {
 
      // 3.8
      test("Delete Admin with null ID", async ({ request }) => {
+
           const nullId = "null";
           const responseBody = await deleteRequest(request, nullId, 404);
           expect(responseBody).toEqual(

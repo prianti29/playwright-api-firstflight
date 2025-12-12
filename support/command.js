@@ -32,6 +32,32 @@ async function super_admin_login(request, baseUrl = BASE_URL) {
   return accessToken;
 }
 
+async function current_admin_login(request, baseUrl = BASE_URL) {
+  // Use existing admin credentials (same as super admin but returns token for current admin use)
+  const { email, password } = adminLoginData.jsonData[8];
+
+  const response = await request.post(`${baseUrl}${ADMIN_LOGIN}`, {
+    data: { email, password },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  expect(response.ok()).toBeTruthy();
+
+  const responseBody = await response.json();
+  expect(responseBody).toEqual(
+    expect.objectContaining({
+      accessToken: expect.any(String),
+      searchToken: expect.any(String),
+    }),
+  );
+
+  const accessToken = responseBody.accessToken;
+  process.env.CURRENT_ADMIN_ACCESS_TOKEN = accessToken;
+  return accessToken;
+}
+
 async function default_seller_signin(request, baseUrl = BASE_URL) {
   const { email, password } = sellerSignInData.jsonData[0];
 
@@ -176,4 +202,5 @@ async function create_admin_without_permissions(request, baseUrl = BASE_URL, adm
   };
 }
 
-export { super_admin_login, default_seller_signin, seller_signin_for_staff_store, create_admin, create_admin_without_permissions };
+export { super_admin_login, default_seller_signin, seller_signin_for_staff_store, create_admin, create_admin_without_permissions, current_admin_login };
+export { };
