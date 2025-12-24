@@ -92,16 +92,15 @@ test.describe("Create Admin Tests", () => {
           const responseBody = await createRequest(request, data, 400);
           expect(responseBody).toEqual(
                expect.objectContaining({
-                    message: expect.arrayContaining([
-                         "each value in permissions must be one of the following values: all, admins_read, admins_write, sellers_read, sellers_write, inventory_products_read, inventory_products_write, catalog_products_read, catalog_products_write, products_read, products_write, orders_read, orders_write, stores_read, stores_write, files_read, files_write, transactions_read, analytics_read, analytics_write, finance_read, finance_write, settings_read, settings_write",
+                    message: expect.arrayContaining(["each value in permissions must be one of the following values: all, admins_read, admins_write, sellers_read, sellers_write, inventory_products_read, inventory_products_write, catalog_products_read, catalog_products_write, products_read, products_write, orders_read, orders_write, stores_read, stores_write, files_read, files_write, transactions_read, analytics_read, analytics_write, finance_read, finance_write, settings_read, settings_write",
                          "All permissions's elements must be unique",
                          "permissions should not be empty",
-                    ]),
+                         "permissions must be an array"]),
                     error: "Bad Request",
                     statusCode: 400,
                })
           );
-          expect(responseBody.message).toHaveLength(3);
+          expect(responseBody.message).toHaveLength(4);
      });
 
      // 2.6

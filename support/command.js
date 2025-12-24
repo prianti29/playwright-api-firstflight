@@ -1,9 +1,11 @@
 import { expect } from '@playwright/test';
-import { ADMIN_LOGIN, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE, ADMINS } from '../support/apiConstants.js';
+import { ADMIN_LOGIN, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE, ADMINS, FILES_PROFILES } from '../support/apiConstants.js';
 import config from '../playwright.config.js';
 import adminLoginData from '../fixtures/AUTH/adminLoginData.js';
 import sellerSignInData from '../fixtures/AUTH/sellerSignIn.js';
 import { faker } from '@faker-js/faker';
+import fs from 'fs';
+import path from 'path';
 
 const BASE_URL = config.use?.BASE_URL;
 
@@ -202,5 +204,61 @@ async function create_admin_without_permissions(request, baseUrl = BASE_URL, adm
   };
 }
 
-export { super_admin_login, default_seller_signin, seller_signin_for_staff_store, create_admin, create_admin_without_permissions, current_admin_login };
+async function delete_admin(request, adminId, baseUrl = BASE_URL, token = null) {
+  const response = await request.delete(`${baseUrl}${ADMINS}/${adminId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token || process.env.SUPER_ADMIN_ACCESS_TOKEN}`,
+    },
+  });
+
+  expect(response.status()).toBe(200);
+
+  // Return response body if available, otherwise null
+  const responseText = await response.text();
+  if (responseText && responseText.trim() !== '') {
+    return JSON.parse(responseText);
+  }
+  return null;
+}
+
+async function upload_profile_file(request, filePath, baseUrl = BASE_URL, token = null) {
+  // Read the file
+  const fileBuffer = fs.readFileSync(filePath);
+  const fileName = path.basename(filePath);
+
+  // Create FormData for file upload
+  const formData = new FormData();
+  const blob = new Blob([fileBuffer]);
+  formData.append('file', blob, fileName);
+
+  const response = await request.post(`${baseUrl}${FILES_PROFILES}`, {
+    multipart: {
+      file: {
+        name: fileName,
+        mimeType: 'application/octet-stream',
+        buffer: fileBuffer,
+      },
+    },
+    headers: {
+      Authorization: `Bearer ${token || process.env.SUPER_ADMIN_ACCESS_TOKEN}`,
+    },
+  });
+
+  expect(response.ok()).toBeTruthy();
+
+  const responseBody = await response.json();
+  
+  // Extract file ID from response (adjust field name based on actual API response)
+  const fileId = responseBody.id || responseBody.fileId || responseBody.data?.id;
+  
+  if (fileId) {
+    // Save file ID to environment variable
+    process.env.PROFILE_FILE_ID = fileId;
+  }
+
+  return responseBody;
+}
+
+export { super_admin_login, default_seller_signin, seller_signin_for_staff_store, create_admin, create_admin_without_permissions, current_admin_login, delete_admin, upload_profile_file };
 export { };

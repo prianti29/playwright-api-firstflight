@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, ADMIN_LOGIN } from "../../support/apiConstants.js";
-import { super_admin_login, create_admin, create_admin_without_permissions } from "../../support/command.js";
+import { super_admin_login, create_admin, create_admin_without_permissions, delete_admin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 
 const BASE_URL = config.use?.BASE_URL;
@@ -33,12 +33,9 @@ test.describe("Delete Admin Tests", () => {
      // 3.1
      test("Delete Admin with valid ID", async ({ request }) => {
           const createdAdmin = await create_admin(request, BASE_URL);
-
           const adminId = createdAdmin.id;
-
-          //  Delete the admin using the fetched adminId
-          const response = await deleteAdminRequest(request, adminId);
-          expect(response.status()).toBe(200);
+          // Delete the admin using the command function
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.2
