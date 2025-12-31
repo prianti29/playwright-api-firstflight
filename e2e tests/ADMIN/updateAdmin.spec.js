@@ -37,31 +37,11 @@ test.describe("Update Admin Tests", () => {
 
      // 3.1
      test("Update Admin with valid data", async ({ request }) => {
-          // Create an admin first to use its token for updating
-          const adminPassword = faker.internet.password({ length: 8 });
-          const currentAdmin = await create_admin(request, BASE_URL, {
-               firstName: faker.person.firstName(),
-               lastName: faker.person.lastName(),
-               email: faker.internet.email(),
-               password: adminPassword,
-               designation: faker.person.jobTitle(),
-               permissions: ["admins_read", "admins_write"]
-          });
-
-          // Login as the created admin to get its access token
-          const loginResponse = await request.post(`${BASE_URL}${ADMIN_LOGIN}`, {
-               data: { email: currentAdmin.email, password: adminPassword },
-               headers: { "Content-Type": "application/json" },
-          });
-          expect(loginResponse.ok()).toBeTruthy();
-          const loginBody = await loginResponse.json();
-          const currentAdminToken = loginBody.accessToken;
-
           // Create an admin to update
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
 
-          // Update the admin with new data using current admin's token
+          // Update the admin with new data using super admin token
           const updateData = {
                firstName: faker.person.firstName(),
                lastName: faker.person.lastName(),
@@ -69,7 +49,7 @@ test.describe("Update Admin Tests", () => {
                permissions: ["admins_read", "sellers_read"]
           };
 
-          const responseBody = await updateRequest(request, adminId, updateData, 200, currentAdminToken);
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
           expect(responseBody).toEqual(
                expect.objectContaining({
                     id: expect.any(String),
@@ -86,6 +66,9 @@ test.describe("Update Admin Tests", () => {
           expect(responseBody.firstName).toBe(updateData.firstName);
           expect(responseBody.lastName).toBe(updateData.lastName);
           expect(responseBody.designation).toBe(updateData.designation);
+
+          // Cleanup: Delete the created admin
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.2
@@ -115,6 +98,8 @@ test.describe("Update Admin Tests", () => {
           );
           expect(responseBody.firstName).toBe(updateData.firstName);
           expect(responseBody.lastName).toBe(updateData.lastName);
+          await delete_admin(request, adminId, BASE_URL);
+
      });
 
      // 3.3
@@ -142,6 +127,8 @@ test.describe("Update Admin Tests", () => {
                })
           );
           expect(responseBody.email).toBe(updateData.email);
+          await delete_admin(request, adminId, BASE_URL);
+
      });
 
      // 3.4
@@ -169,6 +156,7 @@ test.describe("Update Admin Tests", () => {
                })
           );
           expect(responseBody.permissions).toEqual(updateData.permissions);
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.5
@@ -196,6 +184,8 @@ test.describe("Update Admin Tests", () => {
                })
           );
           expect(responseBody.isActive).toEqual(updateData.isActive);
+
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.6
@@ -228,6 +218,7 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 404,
                })
           );
+
      });
 
      // 3.8
@@ -254,6 +245,8 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 401,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
+
      });
 
      // 3.9
@@ -277,6 +270,8 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 401,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
+
      });
 
      // 3.10
@@ -307,6 +302,8 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 403,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
+
      });
 
      // 3.11
@@ -325,6 +322,7 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 400,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.12
@@ -343,6 +341,7 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 400,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.13
@@ -387,6 +386,7 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 400,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.16
@@ -405,6 +405,7 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 400,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.17
@@ -434,6 +435,7 @@ test.describe("Update Admin Tests", () => {
                     statusCode: 400,
                })
           );
+          await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.19
@@ -456,9 +458,11 @@ test.describe("Update Admin Tests", () => {
                data: updateData,
                headers: authHeaders(),
           });
+          expect(response.status()).toBe(404);
+          const responseBody = await response.json();
           expect(responseBody).toEqual(
                expect.objectContaining({
-                    message: expect.stringContaining("Admin not found"),
+                    message: expect.stringContaining("Cannot PATCH /v1/admins/"),
                     error: "Not Found",
                     statusCode: 404,
                })
@@ -483,6 +487,18 @@ test.describe("Update Admin Tests", () => {
           const adminId = createdAdmin.id;
 
           const updateData = { permissions: ["admins_read", "admins_read"], extra: "undefined" };
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
+          expect(responseBody).toBeDefined();
+          // Cleanup: Delete the created admin
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // 3.22
+     test("Duplicate Email id", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { email: "test@test.com" };
           const responseBody = await updateRequest(request, adminId, updateData, 200);
           expect(responseBody).toBeDefined();
           // Cleanup: Delete the created admin

@@ -16,7 +16,7 @@ const ADMIN_API_ENDPOINTS = {
 
 };
 
-// FILES API ENDPOINTS
+//FILES API ENDPOINTS
 const FILES_API_ENDPOINTS = {
     FILES_PROFILES: '/files/profiles',
 };
