@@ -498,7 +498,19 @@ test.describe("Update Admin Tests", () => {
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
 
-          const updateData = { email: "test@test.com" };
+          const updateData = { email: faker.internet.email() };
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
+          expect(responseBody).toBeDefined();
+          // Cleanup: Delete the created admin
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // 3.23
+     test("Update with null email", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { email: null };
           const responseBody = await updateRequest(request, adminId, updateData, 200);
           expect(responseBody).toBeDefined();
           // Cleanup: Delete the created admin
@@ -506,5 +518,28 @@ test.describe("Update Admin Tests", () => {
      });
 
 
+     // 3.24
+     test("Update with null permission", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { permissions: null };
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
+          expect(responseBody).toBeDefined();
+          // Cleanup: Delete the created admin
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // // 3.25
+     // test("Update with empty permission", async ({ request }) => {
+     //      const createdAdmin = await create_admin(request, BASE_URL);
+     //      const adminId = createdAdmin.id;
+
+     //      const updateData = { permissions: [] };
+     //      const responseBody = await updateRequest(request, adminId, updateData, 200);
+     //      expect(responseBody).toBeDefined();
+     //      // Cleanup: Delete the created admin
+     //      await delete_admin(request, adminId, BASE_URL);
+     // });
 });
 
