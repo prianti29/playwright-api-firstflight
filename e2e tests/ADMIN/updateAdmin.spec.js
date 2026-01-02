@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, ADMIN_LOGIN } from "../../support/apiConstants.js";
-import { super_admin_login, create_admin, create_admin_without_permissions, delete_admin } from "../../support/command.js";
+import { super_admin_login, create_admin, create_admin_without_permissions, delete_admin, default_seller_signin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
 
@@ -493,7 +493,7 @@ test.describe("Update Admin Tests", () => {
           await delete_admin(request, adminId, BASE_URL);
      });
 
-     // 3.22
+     // 3.23
      test("Duplicate Email id", async ({ request }) => {
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
@@ -505,7 +505,7 @@ test.describe("Update Admin Tests", () => {
           await delete_admin(request, adminId, BASE_URL);
      });
 
-     // 3.23
+     // 3.24
      test("Update with null email", async ({ request }) => {
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
@@ -518,7 +518,7 @@ test.describe("Update Admin Tests", () => {
      });
 
 
-     // 3.24
+     // 3.25
      test("Update with null permission", async ({ request }) => {
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
@@ -530,16 +530,114 @@ test.describe("Update Admin Tests", () => {
           await delete_admin(request, adminId, BASE_URL);
      });
 
-     // // 3.25
-     // test("Update with empty permission", async ({ request }) => {
-     //      const createdAdmin = await create_admin(request, BASE_URL);
-     //      const adminId = createdAdmin.id;
+     // 3.26
+     test("Update with empty permission", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
 
-     //      const updateData = { permissions: [] };
-     //      const responseBody = await updateRequest(request, adminId, updateData, 200);
-     //      expect(responseBody).toBeDefined();
-     //      // Cleanup: Delete the created admin
-     //      await delete_admin(request, adminId, BASE_URL);
-     // });
+          const updateData = { permissions: [] };
+          const responseBody = await updateRequest(request, adminId, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "permissions should not be empty"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+
+     // 3.27
+     test("Update with null lastName", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { lastName: null };
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
+          expect(responseBody).toBeDefined();
+
+          // Validate that lastName exists in response body
+          expect(responseBody).toHaveProperty('lastName');
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // 3.28
+     test("Update with null isActive", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { lastName: null };
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
+          expect(responseBody).toBeDefined();
+          expect(responseBody).toHaveProperty('isActive');
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // 3.29
+     test("Update with null profilePhotoId", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { profilePhotoId: null };
+          const responseBody = await updateRequest(request, adminId, updateData, 200);
+          expect(responseBody).toBeDefined();
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // 3.30
+     test("Update email with empty string", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { email: "" };
+          const responseBody = await updateRequest(request, adminId, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining(["email must be an email",
+                         "email should not be empty"]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+
+     // 3.31   
+     test("Update permission with empty array", async ({ request }) => {
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { permissions: [] };
+          const responseBody = await updateRequest(request, adminId, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining(["permissions should not be empty"]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+          await delete_admin(request, adminId, BASE_URL);
+     });
+
+     // 3.32   
+     test("With Seller Auth Token", async ({ request }) => {
+          const sellerToken = await default_seller_signin(request, BASE_URL);
+          const createdAdmin = await create_admin(request, BASE_URL);
+          const adminId = createdAdmin.id;
+
+          const updateData = { permissions: [] };
+          const responseBody = await updateRequest(request, adminId, updateData, 403, sellerToken);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.stringContaining("Forbidden resource"),
+                    error: "Forbidden",
+                    statusCode: 403,
+               })
+          );
+          await delete_admin(request, adminId, BASE_URL);
+     });
 });
-
