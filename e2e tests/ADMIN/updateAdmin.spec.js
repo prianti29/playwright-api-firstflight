@@ -345,26 +345,39 @@ test.describe("Update Admin Tests", () => {
      });
 
      // 3.13
-     test("Update Admin with null firstName", async ({ request }) => {
+     test("Update Admin with empty stirng of permission", async ({ request }) => {
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
 
-          const updateData = { firstName: null };
-          const responseBody = await updateRequest(request, adminId, updateData, 200);
-          expect(responseBody).toBeDefined();
+          const updateData = { permissions: [""] };
+          const responseBody = await updateRequest(request, adminId, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining(["each value in permissions must be one of the following values: all, admins_read, admins_write, sellers_read, sellers_write, inventory_products_read, inventory_products_write, catalog_products_read, catalog_products_write, products_read, products_write, orders_read, orders_write, stores_read, stores_write, files_read, files_write, transactions_read, analytics_read, analytics_write, finance_read, finance_write, settings_read, settings_write"]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
 
           // Cleanup: Delete the created admin
           await delete_admin(request, adminId, BASE_URL);
      });
 
      // 3.14
-     test("Update Admin with null lastName", async ({ request }) => {
+     test("Update Admin with empty string of email", async ({ request }) => {
           const createdAdmin = await create_admin(request, BASE_URL);
           const adminId = createdAdmin.id;
 
-          const updateData = { lastName: null };
-          const responseBody = await updateRequest(request, adminId, updateData, 200);
-          expect(responseBody).toBeDefined();
+          const updateData = { email: "" };
+          const responseBody = await updateRequest(request, adminId, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining(["email must be an email",
+                         "email should not be empty"]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
 
           // Cleanup: Delete the created admin
           await delete_admin(request, adminId, BASE_URL);
