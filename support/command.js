@@ -34,9 +34,9 @@ async function super_admin_login(request, baseUrl = BASE_URL) {
   return accessToken;
 }
 
-async function current_admin_login(request, baseUrl = BASE_URL) {
-  // Use existing admin credentials (same as super admin but returns token for current admin use)
-  const { email, password } = adminLoginData.jsonData[8];
+async function current_admin_login(request, baseUrl = BASE_URL, credentials = null) {
+  // Use existing admin credentials or provided ones
+  const { email, password } = credentials || adminLoginData.jsonData[8];
 
   const response = await request.post(`${baseUrl}${ADMIN_LOGIN}`, {
     data: { email, password },
@@ -248,10 +248,10 @@ async function upload_profile_file(request, filePath, baseUrl = BASE_URL, token 
   expect(response.ok()).toBeTruthy();
 
   const responseBody = await response.json();
-  
+
   // Extract file ID from response (adjust field name based on actual API response)
   const fileId = responseBody.id || responseBody.fileId || responseBody.data?.id;
-  
+
   if (fileId) {
     // Save file ID to environment variable
     process.env.PROFILE_FILE_ID = fileId;
