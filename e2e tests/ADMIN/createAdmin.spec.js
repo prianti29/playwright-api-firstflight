@@ -24,7 +24,7 @@ const createRequest = async (request, data, expectedStatus) => {
      return response.json();
 };
 
-test.describe("Create Admin Tests", () => {
+test.describe.serial("Create Admin Tests", () => {
      test.beforeEach(async ({ request }) => {
           await super_admin_login(request, BASE_URL);
      });

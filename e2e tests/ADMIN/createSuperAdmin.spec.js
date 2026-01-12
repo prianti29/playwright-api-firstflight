@@ -21,7 +21,7 @@ const superAdminCreateRequest = async (request, data, expectedStatus) => {
      return response.json();
 };
 
-test.describe("Create Super Admin Test Suite", () => {
+test.describe.serial("Create Super Admin Test Suite", () => {
      // 1.1
      test("existing super admin signup", async ({ request }) => {
           const data = fixtureData.jsonData[0];

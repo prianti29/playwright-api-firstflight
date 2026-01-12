@@ -24,7 +24,7 @@ const deleteRequest = async (request, adminId, expectedStatus) => {
      return null;
 };
 
-test.describe("Delete Admin Tests", () => {
+test.describe.serial("Delete Admin Tests", () => {
      test.beforeEach(async ({ request }) => {
           await super_admin_login(request, BASE_URL);
 
