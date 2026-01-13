@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, UPDATE_CURRENT_ADMIN_PASSWORD, CURRENT_ADMIN } from "../../support/apiConstants.js";
-import { current_admin_login } from "../../support/command.js";
+import { current_admin_login, default_seller_signin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
 import adminLoginData from "../../fixtures/AUTH/adminLoginData.js";
@@ -186,7 +186,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           );
      });
 
-     //4.6
+     //4.7
      test("Null value in oldPassword", async ({ request }) => {
 
           // Update the admin with new data
@@ -205,6 +205,275 @@ test.describe.serial("Update Current Admin Password Tests", () => {
                     ]),
                     error: "Bad Request",
                     statusCode: 400,
+               })
+          );
+     });
+
+     //4.8
+     test("Null value in newPassword", async ({ request }) => {
+
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: "12345678",
+               newPassword: null
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "newPassword must be longer than or equal to 6 characters",
+                         "newPassword must be a string",
+                         "newPassword should not be empty"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.9
+     test("Empty value of oldPassword", async ({ request }) => {
+
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: "",
+               newPassword: "12345678"
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "oldPassword must be longer than or equal to 6 characters",
+                         "oldPassword should not be empty"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.10
+     test("Empty value of newPassword value", async ({ request }) => {
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: "12345678",
+               newPassword: ""
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "newPassword must be longer than or equal to 6 characters",
+                         "newPassword should not be empty"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.11
+     test("Update with same oldPassword and newPassword", async ({ request }) => {
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: "12345678",
+               newPassword: "12345678"
+          };
+
+          await updatePasswordRequest(request, updateData, 200);
+     });
+
+     //4.12
+     test("Number value of oldPassword", async ({ request }) => {
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: 12345678,
+               newPassword: "12345678"
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "oldPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
+                         "oldPassword must be a string"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.13
+     test("Number value of newPassword", async ({ request }) => {
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: "12345678",
+               newPassword: 12345678
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "newPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
+                         "newPassword must be a string"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.14
+     test("Update with long password", async ({ request }) => {
+          // Update the admin with new data
+          const updateData = {
+               oldPassword: "12345678",
+               newPassword: "a".repeat(101)
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "newPassword must be shorter than or equal to 100 characters"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.14
+     test("Boolean value in oldPassword", async ({ request }) => {
+          const updateData = {
+               oldPassword: true,
+               newPassword: "12345678"
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "oldPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
+                         "oldPassword must be a string"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.15
+     test("Boolean value in oldPassword", async ({ request }) => {
+          const updateData = {
+               oldPassword: true,
+               newPassword: "12345678"
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "oldPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
+                         "oldPassword must be a string"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.16
+     test("Boolean value in oldPassword", async ({ request }) => {
+          const updateData = {
+               oldPassword: true,
+               newPassword: "12345678"
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "oldPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
+                         "oldPassword must be a string"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.17
+     test("Extra unexpected field", async ({ request }) => {
+          const updateData = {
+               oldPassword: "12345678",
+               newPassword: "12345678",
+               extra: "extra"
+          };
+
+          await updatePasswordRequest(request, updateData, 200);
+     });
+
+     //4.18
+     test("Empty request", async ({ request }) => {
+          const updateData = {
+          };
+
+          const responseBody = await updatePasswordRequest(request, updateData, 400);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: expect.arrayContaining([
+                         "oldPassword must be longer than or equal to 6 characters",
+                         "oldPassword must be a string",
+                         "oldPassword should not be empty",
+                         "newPassword must be longer than or equal to 6 characters",
+                         "newPassword must be a string",
+                         "newPassword should not be empty"
+                    ]),
+                    error: "Bad Request",
+                    statusCode: 400,
+               })
+          );
+     });
+
+     //4.19
+     test("Update with unauthorize token", async ({ request }) => {
+          const updateData = {
+               "oldPassword": "12345678",
+               "newPassword": "12345678"
+          };
+
+          const invalidToken = process.env.UNAUTHORIZED_ACCESS_TOKEN || "invalid_token_fallback";
+          const responseBody = await updatePasswordRequest(request, updateData, 401, invalidToken);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: "Invalid access token",
+                    error: "Unauthorized",
+                    statusCode: 401,
+               })
+          );
+     });
+
+     //4.20
+     test("Update with seller access", async ({ request }) => {
+
+          const updateData = {
+               "oldPassword": "12345678",
+               "newPassword": "12345678"
+          };
+
+          const sellerAccessToken = await default_seller_signin(request, BASE_URL);
+          const responseBody = await updatePasswordRequest(request, updateData, 403, sellerAccessToken);
+          expect(responseBody).toEqual(
+               expect.objectContaining({
+                    message: "Forbidden resource",
+                    error: "Forbidden",
+                    statusCode: 403,
                })
           );
      });
