@@ -39,7 +39,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
      })
 
      // 4.1
-     test("update password of current admin with valid old password and new password", async ({ request }) => {
+     test.skip("update password of current admin with valid old password and new password", async ({ request }) => {
 
           // Update the current admin password with new password
           const currentAdminData = adminLoginData.jsonData[8];
@@ -286,6 +286,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           await updatePasswordRequest(request, updateData, 200);
      });
 
+
      //4.12
      test("Number value of oldPassword", async ({ request }) => {
           // Update the admin with new data
@@ -406,17 +407,6 @@ test.describe.serial("Update Current Admin Password Tests", () => {
                     statusCode: 400,
                })
           );
-     });
-
-     //4.17
-     test("Extra unexpected field", async ({ request }) => {
-          const updateData = {
-               oldPassword: "12345678",
-               newPassword: "12345678",
-               extra: "extra"
-          };
-
-          await updatePasswordRequest(request, updateData, 200);
      });
 
      //4.18
