@@ -39,7 +39,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
      })
 
      // 4.1
-     test.skip("update password of current admin with valid old password and new password", async ({ request }) => {
+     test("update password of current admin with valid old password and new password", async ({ request }) => {
 
           // Update the current admin password with new password
           const currentAdminData = adminLoginData.jsonData[8];
@@ -82,7 +82,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
 
      //4.2
      test("update password of current admin with invalid old password and new password", async ({ request }) => {
-
+          await current_admin_login(request, BASE_URL);
           // Update the admin with new data
           const updateData = {
                oldPassword: "invalidPassword",
@@ -289,6 +289,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
 
      //4.12
      test("Number value of oldPassword", async ({ request }) => {
+          await current_admin_login(request, BASE_URL);
           // Update the admin with new data
           const updateData = {
                oldPassword: 12345678,
@@ -349,26 +350,6 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           );
      });
 
-     //4.14
-     test("Boolean value in oldPassword", async ({ request }) => {
-          const updateData = {
-               oldPassword: true,
-               newPassword: "12345678"
-          };
-
-          const responseBody = await updatePasswordRequest(request, updateData, 400);
-          expect(responseBody).toEqual(
-               expect.objectContaining({
-                    message: expect.arrayContaining([
-                         "oldPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
-                         "oldPassword must be a string"
-                    ]),
-                    error: "Bad Request",
-                    statusCode: 400,
-               })
-          );
-     });
-
      //4.15
      test("Boolean value in oldPassword", async ({ request }) => {
           const updateData = {
@@ -390,18 +371,18 @@ test.describe.serial("Update Current Admin Password Tests", () => {
      });
 
      //4.16
-     test("Boolean value in oldPassword", async ({ request }) => {
+     test("Boolean value in newPassword", async ({ request }) => {
           const updateData = {
-               oldPassword: true,
-               newPassword: "12345678"
+               oldPassword: "12345678",
+               newPassword: true
           };
 
           const responseBody = await updatePasswordRequest(request, updateData, 400);
           expect(responseBody).toEqual(
                expect.objectContaining({
                     message: expect.arrayContaining([
-                         "oldPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
-                         "oldPassword must be a string"
+                         "newPassword must be longer than or equal to 6 and shorter than or equal to 100 characters",
+                         "newPassword must be a string"
                     ]),
                     error: "Bad Request",
                     statusCode: 400,
@@ -409,11 +390,12 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           );
      });
 
+
      //4.18
      test("Empty request", async ({ request }) => {
+          await current_admin_login(request, BASE_URL);
           const updateData = {
           };
-
           const responseBody = await updatePasswordRequest(request, updateData, 400);
           expect(responseBody).toEqual(
                expect.objectContaining({
