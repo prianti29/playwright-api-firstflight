@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, UPDATE_CURRENT_ADMIN_PASSWORD, CURRENT_ADMIN } from "../../support/apiConstants.js";
-import { current_admin_login, default_seller_signin } from "../../support/command.js";
+import { current_admin_login, default_seller_signin, super_admin_login, create_admin, delete_admin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
 import adminLoginData from "../../fixtures/AUTH/adminLoginData.js";
@@ -34,51 +34,47 @@ const updatePasswordRequest = async (request, data, expectedStatus, token = null
 
 
 test.describe.serial("Update Current Admin Password Tests", () => {
+     let adminEmail;
+     let adminPassword;
+     let adminId;
+
+     test.beforeAll(async ({ playwright }) => {
+          const apiContext = await playwright.request.newContext({
+               baseURL: BASE_URL
+          });
+          await super_admin_login(apiContext, BASE_URL);
+          adminEmail = faker.internet.email();
+          adminPassword = "12345678";
+          const newAdmin = await create_admin(apiContext, BASE_URL, {
+               email: adminEmail,
+               password: adminPassword,
+               firstName: "Test",
+               lastName: "Admin",
+               designation: "Tester",
+               permissions: ["admins_read", "admins_write"]
+          });
+          adminId = newAdmin.id;
+          await apiContext.dispose();
+     });
+
+     test.afterAll(async ({ playwright }) => {
+          const apiContext = await playwright.request.newContext({
+               baseURL: BASE_URL
+          });
+          if (adminId) {
+               await delete_admin(apiContext, adminId, BASE_URL);
+          }
+          await apiContext.dispose();
+     });
+
      test.beforeEach(async ({ request }) => {
-          await current_admin_login(request, BASE_URL);
+          await current_admin_login(request, BASE_URL, {
+               email: adminEmail,
+               password: adminPassword
+          });
      })
 
-     // 4.1
-     test("update password of current admin with valid old password and new password", async ({ request }) => {
 
-          // Update the current admin password with new password
-          const currentAdminData = adminLoginData.jsonData[8];
-          const initialPassword = currentAdminData.password; // Should be "12345678"
-          const randomPassword = faker.internet.password();
-
-          // Step 1: Update from initial password to random password
-          const payload1 = {
-               oldPassword: initialPassword,
-               newPassword: randomPassword,
-          };
-          const response1 = await updatePasswordRequest(request, payload1, 200);
-          console.log(`Password updated to: ${randomPassword}`);
-
-          // Wait a moment for the password change to propagate (matching logic from provided snippet)
-          await new Promise(resolve => setTimeout(resolve, 500));
-
-          // Login with new password to get a valid token for reset
-          console.log("Verifying login with new password...");
-          const newToken = await current_admin_login(request, BASE_URL, {
-               email: currentAdminData.email,
-               password: randomPassword
-          });
-          expect(newToken).toBeTruthy();
-          console.log(`New Access Token obtained: ${newToken.substring(0, 10)}...`);
-
-          // Step 2: Reset password back to default "12345678" using the new token
-          const payload2 = {
-               oldPassword: randomPassword,
-               newPassword: initialPassword, // Resetting back to "12345678"
-          };
-          console.log("Request Payload 2:", payload2);
-
-          const response2 = await updatePasswordRequest(request, payload2, 200, newToken);
-
-          if (response2) {
-               console.log(`Reset password response body: ${JSON.stringify(response2)}`);
-          }
-     });
 
      //4.2
      test("update password of current admin with invalid old password and new password", async ({ request }) => {
@@ -448,5 +444,46 @@ test.describe.serial("Update Current Admin Password Tests", () => {
                     statusCode: 403,
                })
           );
+     });
+
+     // 4.1 Moved to end to prevent side effects
+     test("update password of current admin with valid old password and new password", async ({ request }) => {
+
+          // Update the current admin password with new password
+          const initialPassword = adminPassword; // "12345678"
+          const randomPassword = faker.internet.password();
+
+          // Step 1: Update from initial password to random password
+          const payload1 = {
+               oldPassword: initialPassword,
+               newPassword: randomPassword,
+          };
+          const response1 = await updatePasswordRequest(request, payload1, 200);
+          console.log(`Password updated to: ${randomPassword}`);
+
+          // Wait a moment for the password change to propagate
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Login with new password to get a valid token for reset
+          console.log("Verifying login with new password...");
+          const newToken = await current_admin_login(request, BASE_URL, {
+               email: adminEmail,
+               password: randomPassword
+          });
+          expect(newToken).toBeTruthy();
+          console.log(`New Access Token obtained: ${newToken.substring(0, 10)}...`);
+
+          // Step 2: Reset password back to default "12345678" using the new token
+          const payload2 = {
+               oldPassword: randomPassword,
+               newPassword: initialPassword, // Resetting back to "12345678"
+          };
+          console.log("Request Payload 2:", payload2);
+
+          const response2 = await updatePasswordRequest(request, payload2, 200, newToken);
+
+          if (response2) {
+               console.log(`Reset password response body: ${JSON.stringify(response2)}`);
+          }
      });
 });
