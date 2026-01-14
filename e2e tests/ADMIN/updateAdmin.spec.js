@@ -30,7 +30,7 @@ const updateRequest = async (request, adminId, data, expectedStatus, token = nul
      return null;
 };
 
-test.describe("Update Admin Tests", () => {
+test.describe.serial("Update Admin Tests", () => {
      test.beforeEach(async ({ request }) => {
           await super_admin_login(request, BASE_URL);
      });

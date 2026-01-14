@@ -49,8 +49,9 @@ const testCases = {
           email: "' OR '1'='1",
           password: DEFAULT_PASSWORD,
      },
+     //current admin login - Test 1.8
      currentAdminLogin: {
-          email: "current.admin@gmail.com",
+          email: "currentAdmin@gmail.com",
           password: "12345678",
      },
 };
