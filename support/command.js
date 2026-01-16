@@ -1,13 +1,12 @@
 import { expect } from '@playwright/test';
 import { ADMIN_LOGIN, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE, ADMINS, FILES_PROFILES } from '../support/apiConstants.js';
-import config from '../playwright.config.js';
 import adminLoginData from '../fixtures/AUTH/adminLoginData.js';
 import sellerSignInData from '../fixtures/AUTH/sellerSignIn.js';
 import { faker } from '@faker-js/faker';
 import fs from 'fs';
 import path from 'path';
 
-const BASE_URL = config.use?.BASE_URL;
+const BASE_URL = process.env.BASE_URL;
 
 async function super_admin_login(request, baseUrl = BASE_URL) {
   const { email, password } = adminLoginData.jsonData[0];

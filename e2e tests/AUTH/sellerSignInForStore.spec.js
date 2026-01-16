@@ -3,7 +3,7 @@ import { seller_signin_for_staff_store, default_seller_signin, super_admin_login
 import { SELLER_SIGNIN_FOR_STORE } from "../../support/apiConstants.js";
 import config from "../../playwright.config.js";
 
-const BASE_URL = config.use?.BASE_URL;
+const BASE_URL = process.env.BASE_URL;
 const validStoreId = 'gsso0e05ljljvf3jafnzfd51';
 const invalidStoreId = 'gsso0e05ljljvf3jafnzfd5123565989';
 test.describe("Seller Sign In For Staff Store Tests", () => {

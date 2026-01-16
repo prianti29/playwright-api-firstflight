@@ -4,7 +4,7 @@ import { super_admin_login } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import fixtureData from "../../fixtures/AUTH/adminLoginData.js";
 
-const BASE_URL = config.use?.BASE_URL;
+const BASE_URL = process.env.BASE_URL;
 
 const authHeaders = () => ({
   "Content-Type": "application/json",
