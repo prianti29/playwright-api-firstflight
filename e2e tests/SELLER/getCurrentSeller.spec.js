@@ -104,12 +104,12 @@ test.describe.serial("Get Current Seller Test Suite", () => {
                "Content-Type": "application/json",
                Authorization: `Bearer ${process.env.CURRENT_ADMIN_ACCESS_TOKEN}`,
           });
-          const responseBody = await getRequest(request, 403, authHeaders());
+          const responseBody = await getRequest(request, 401, authHeaders());
           expect(responseBody).toEqual(
                expect.objectContaining({
-                    message: expect.stringContaining("Forbidden"),
-                    error: "Forbidden",
-                    statusCode: 403,
+                    message: expect.stringContaining("Invalid access token"),
+                    error: "Unauthorized",
+                    statusCode: 401,
                })
           );
      });
