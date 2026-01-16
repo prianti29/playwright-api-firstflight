@@ -5,7 +5,7 @@ import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
 import adminLoginData from "../../fixtures/AUTH/adminLoginData.js";
 
-const BASE_URL = config.use?.BASE_URL;
+const BASE_URL = process.env.BASE_URL;
 
 const authHeaders = (token = null) => ({
      "Content-Type": "application/json",
@@ -38,6 +38,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
      let adminPassword;
      let adminId;
 
+     // Setup once for all tests: Create a dedicated admin to ensure test isolation
      test.beforeAll(async ({ playwright }) => {
           const apiContext = await playwright.request.newContext({
                baseURL: BASE_URL
@@ -57,6 +58,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           await apiContext.dispose();
      });
 
+     // Cleanup once after all tests: Delete the dedicated admin
      test.afterAll(async ({ playwright }) => {
           const apiContext = await playwright.request.newContext({
                baseURL: BASE_URL
@@ -67,6 +69,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           await apiContext.dispose();
      });
 
+     // Runs before each test: Authenticate as the dedicated admin
      test.beforeEach(async ({ request }) => {
           await current_admin_login(request, BASE_URL, {
                email: adminEmail,
@@ -74,11 +77,8 @@ test.describe.serial("Update Current Admin Password Tests", () => {
           });
      })
 
-
-
      //4.2
      test("update password of current admin with invalid old password and new password", async ({ request }) => {
-          await current_admin_login(request, BASE_URL);
           // Update the admin with new data
           const updateData = {
                oldPassword: "invalidPassword",
@@ -416,7 +416,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
                "newPassword": "12345678"
           };
 
-          const invalidToken = process.env.UNAUTHORIZED_ACCESS_TOKEN || "invalid_token_fallback";
+          const invalidToken = process.env.INVALID_ACCESS_TOKEN;
           const responseBody = await updatePasswordRequest(request, updateData, 401, invalidToken);
           expect(responseBody).toEqual(
                expect.objectContaining({

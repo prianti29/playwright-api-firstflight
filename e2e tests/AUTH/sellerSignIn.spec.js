@@ -4,7 +4,7 @@ import { default_seller_signin } from "../../support/command.js";
 import config from "../../playwright.config.js";
 import fixtureData from "../../fixtures/AUTH/sellerSignIn.js";
 
-const BASE_URL = config.use?.BASE_URL;
+const BASE_URL = process.env.BASE_URL;
 
 const postSellerSignIn = async (request, data) => {
      const response = await request.post(`${BASE_URL}${SELLER_SIGNIN}`, {

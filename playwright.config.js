@@ -1,9 +1,9 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
 
-/**
- * @see https://playwright.dev/docs/test-configuration
- */
+dotenv.config();
+
 export default defineConfig({
   testDir: './e2e tests',
   fullyParallel: true,
@@ -11,10 +11,14 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+
   use: {
-    BASE_URL: process.env.API_BASE_URL || 'https://api.pengine.dev/v1',
+    baseURL: process.env.BASE_URL,
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
+
   projects: [
     {
       name: 'chromium',

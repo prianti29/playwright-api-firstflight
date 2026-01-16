@@ -4,7 +4,7 @@ import { super_admin_login, create_admin, create_admin_without_permissions, dele
 import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
 
-const BASE_URL = config.use?.BASE_URL;
+const BASE_URL = process.env.BASE_URL;
 
 const authHeaders = (token = null) => ({
      "Content-Type": "application/json",
