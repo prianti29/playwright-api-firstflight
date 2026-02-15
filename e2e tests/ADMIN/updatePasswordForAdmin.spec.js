@@ -414,7 +414,7 @@ test.describe.serial("Update Current Admin Password Tests", () => {
                "newPassword": "12345678"
           };
 
-          const invalidToken = process.env.INVALID_ACCESS_TOKEN;
+          const invalidToken = "invalid_token_12345";
           const responseBody = await updatePasswordRequest(request, updateData, 401, invalidToken);
           expect(responseBody).toEqual(
                expect.objectContaining({

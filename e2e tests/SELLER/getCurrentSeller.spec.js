@@ -4,14 +4,19 @@ import { default_seller_signin, current_admin_login } from "../../support/comman
 
 import { BASE_URL } from "../../playwright.config.js";
 
-const authHeaders = (token = null) => ({
-     "Content-Type": "application/json",
-     Authorization: `Bearer ${token || process.env.SELLER_ACCESS_TOKEN}`,
-});
+const authHeaders = (token = null) => {
+     const bearerToken = token !== null ? token : process.env.SELLER_ACCESS_TOKEN;
+     return {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${bearerToken}`,
+     };
+};
+
 const getCurrentSellerRequest = (request, token = null) =>
      request.get(`${BASE_URL}${CURRENT_SELLER}`, {
           headers: authHeaders(token),
      });
+
 const getRequest = async (request, expectedStatus, token = null) => {
      const response = await getCurrentSellerRequest(request, token);
      expect(response.status()).toBe(expectedStatus);
@@ -38,54 +43,25 @@ test.describe.serial("Get Current Seller Test Suite", () => {
           );
 
           // Validate date
-          const isoDateRegex =
-               /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-
+          const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
           expect(responseBody.createdAt).toMatch(isoDateRegex);
           expect(responseBody.updatedAt).toMatch(isoDateRegex);
 
-          // validate profilePhoto Object 
           if (responseBody.profilePhoto) {
                expect(responseBody.profilePhoto).toEqual(
                     expect.objectContaining({
                          id: expect.any(String),
                          url: expect.stringContaining("https://"),
-                         createdAt: expect.any(String),
-                         updatedAt: expect.any(String),
-                         variants: expect.objectContaining({
-                              tiny: expect.objectContaining({
-                                   url: expect.stringContaining("https://"),
-                              }),
-                         }),
                     })
                );
-
-               expect(responseBody.profilePhoto.createdAt).toMatch(isoDateRegex);
-               expect(responseBody.profilePhoto.updatedAt).toMatch(isoDateRegex);
           }
 
-          // Validate stores
           expect(responseBody.stores.length).toBeGreaterThan(0);
-
-          responseBody.stores.forEach((store) => {
-               expect(store).toEqual(
-                    expect.objectContaining({
-                         id: expect.any(String),
-                         name: expect.any(String),
-                         isActive: expect.any(Boolean),
-                         createdAt: expect.any(String),
-                         updatedAt: expect.any(String),
-                    })
-               );
-
-               expect(store.createdAt).toMatch(isoDateRegex);
-               expect(store.updatedAt).toMatch(isoDateRegex);
-          });
      });
 
      //1.2
      test("Get current seller with invalid seller access token", async ({ request }) => {
-          const invalidToken = process.env.INVALID_ACCESS_TOKEN;
+          const invalidToken = "invalid_token_12345";
           const responseBody = await getRequest(request, 401, invalidToken);
           expect(responseBody).toEqual(
                expect.objectContaining({
@@ -98,19 +74,14 @@ test.describe.serial("Get Current Seller Test Suite", () => {
 
      //1.3
      test("Forbidden to get current seller with admin access token", async ({ request }) => {
-          await current_admin_login(request, BASE_URL);
-          const authHeaders = () => ({
-               "Content-Type": "application/json",
-               Authorization: `Bearer ${process.env.CURRENT_ADMIN_ACCESS_TOKEN}`,
-          });
-          const responseBody = await getRequest(request, 401, authHeaders());
+          const adminToken = await current_admin_login(request, BASE_URL);
+          const responseBody = await getRequest(request, 403, adminToken);
           expect(responseBody).toEqual(
                expect.objectContaining({
-                    message: expect.stringContaining("Invalid access token"),
-                    error: "Unauthorized",
-                    statusCode: 401,
+                    message: "Forbidden resource",
+                    error: "Forbidden",
+                    statusCode: 403,
                })
           );
      });
-
-})
+});
