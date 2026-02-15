@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, UPDATE_CURRENT_ADMIN_PASSWORD, CURRENT_ADMIN } from "../../support/apiConstants.js";
 import { current_admin_login, default_seller_signin, super_admin_login, create_admin, delete_admin } from "../../support/command.js";
-import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
-import adminLoginData from "../../fixtures/AUTH/adminLoginData.js";
 
 const BASE_URL = process.env.BASE_URL;
 

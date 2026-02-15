@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMIN_LOGIN } from "../../support/apiConstants.js";
 import { super_admin_login } from "../../support/command.js";
-import config from "../../playwright.config.js";
 import fixtureData from "../../fixtures/AUTH/adminLoginData.js";
 
 const BASE_URL = process.env.BASE_URL;

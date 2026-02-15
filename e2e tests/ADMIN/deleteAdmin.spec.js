@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, ADMIN_LOGIN } from "../../support/apiConstants.js";
 import { super_admin_login, create_admin, create_admin_without_permissions, delete_admin } from "../../support/command.js";
-import config from "../../playwright.config.js";
 
 const BASE_URL = process.env.BASE_URL;
 

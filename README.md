@@ -144,7 +144,7 @@ They are optimized for:
 Use them in tests via:
 
 ```js
-import fixtureData from "../../fixtures/AUTH/sellerSignIn.js";
+import fixtureData from "../../fixtures/AUTH/sellerSignInData.js";
 const data = fixtureData.jsonData[0];
 ```
 
