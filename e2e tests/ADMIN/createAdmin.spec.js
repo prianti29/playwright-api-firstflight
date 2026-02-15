@@ -4,7 +4,7 @@ import { super_admin_login, create_admin } from "../../support/command.js";
 import fixtureData from "../../fixtures/ADMIN/createAdminData.js";
 import { faker } from "@faker-js/faker";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const authHeaders = () => ({
      "Content-Type": "application/json",

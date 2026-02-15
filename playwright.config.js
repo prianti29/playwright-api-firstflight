@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+export const BASE_URL = process.env.BASE_URL || 'https://api.pengine.dev/v1';
+
 export default defineConfig({
   testDir: './e2e tests',
   fullyParallel: true,
@@ -13,7 +15,7 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    baseURL: process.env.BASE_URL,
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

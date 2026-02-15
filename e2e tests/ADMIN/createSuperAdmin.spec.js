@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { SUPER_ADMIN_CREATE } from "../../support/apiConstants.js";
 import fixtureData from "../../fixtures/ADMIN/createSuperAdminData.js";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const authHeaders = () => ({
      "Content-Type": "application/json"

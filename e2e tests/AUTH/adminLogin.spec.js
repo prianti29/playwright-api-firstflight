@@ -3,7 +3,7 @@ import { ADMIN_LOGIN } from "../../support/apiConstants.js";
 import { super_admin_login } from "../../support/command.js";
 import fixtureData from "../../fixtures/AUTH/adminLoginData.js";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const authHeaders = () => ({
   "Content-Type": "application/json",

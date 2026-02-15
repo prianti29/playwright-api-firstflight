@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import { SELLER_SIGNUP } from "../../support/apiConstants.js";
 import fixtureData from "../../fixtures/AUTH/sellerSignUpData.js";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const postSellerSignUp = async (request, data) => {
   const response = await request.post(`${BASE_URL}${SELLER_SIGNUP}`, {

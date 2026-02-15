@@ -5,8 +5,9 @@ import sellerSignInData from '../fixtures/AUTH/sellerSignInData.js';
 import { faker } from '@faker-js/faker';
 import fs from 'fs';
 import path from 'path';
+import { BASE_URL } from '../playwright.config.js';
 
-const BASE_URL = process.env.BASE_URL;
+// BASE_URL is now centralized in playwright.config.js
 
 async function super_admin_login(request, baseUrl = BASE_URL) {
   const { email, password } = adminLoginData.jsonData[0];
