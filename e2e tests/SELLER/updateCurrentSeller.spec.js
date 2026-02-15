@@ -2,7 +2,7 @@
 // import { CURRENT_SELLER } from "../../support/apiConstants.js";
 // import { default_seller_signin, current_admin_login } from "../../support/command.js";
 
-// const BASE_URL = process.env.BASE_URL;
+// import { BASE_URL } from "../../playwright.config.js";
 
 // const authHeaders = () => ({
 //      "Content-Type": "application/json",

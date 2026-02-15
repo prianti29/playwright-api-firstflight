@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { seller_signin_for_staff_store, default_seller_signin, super_admin_login } from "../../support/command.js";
 import { SELLER_SIGNIN_FOR_STORE } from "../../support/apiConstants.js";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 const validStoreId = 'gsso0e05ljljvf3jafnzfd51';
 const invalidStoreId = 'gsso0e05ljljvf3jafnzfd5123565989';
 test.describe("Seller Sign In For Staff Store Tests", () => {

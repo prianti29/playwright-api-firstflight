@@ -2,18 +2,18 @@ import { test, expect } from "@playwright/test";
 import { CURRENT_SELLER } from "../../support/apiConstants.js";
 import { default_seller_signin, current_admin_login } from "../../support/command.js";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
-const authHeaders = () => ({
+const authHeaders = (token = null) => ({
      "Content-Type": "application/json",
-     Authorization: `Bearer ${process.env.SELLER_ACCESS_TOKEN}`,
+     Authorization: `Bearer ${token || process.env.SELLER_ACCESS_TOKEN}`,
 });
-const getCurrentSellerRequest = (request) =>
+const getCurrentSellerRequest = (request, token = null) =>
      request.get(`${BASE_URL}${CURRENT_SELLER}`, {
-          headers: authHeaders(),
+          headers: authHeaders(token),
      });
-const getRequest = async (request, expectedStatus) => {
-     const response = await getCurrentSellerRequest(request);
+const getRequest = async (request, expectedStatus, token = null) => {
+     const response = await getCurrentSellerRequest(request, token);
      expect(response.status()).toBe(expectedStatus);
      return response.json();
 };

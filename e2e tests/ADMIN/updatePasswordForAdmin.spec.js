@@ -3,7 +3,7 @@ import { ADMINS, UPDATE_CURRENT_ADMIN_PASSWORD, CURRENT_ADMIN } from "../../supp
 import { current_admin_login, default_seller_signin, super_admin_login, create_admin, delete_admin } from "../../support/command.js";
 import { faker } from "@faker-js/faker";
 
-const BASE_URL = process.env.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const authHeaders = (token = null) => ({
      "Content-Type": "application/json",
