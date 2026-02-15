@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { ADMINS, ADMIN_LOGIN } from "../../support/apiConstants.js";
 import { super_admin_login, create_admin, create_admin_without_permissions, delete_admin, default_seller_signin } from "../../support/command.js";
-import config from "../../playwright.config.js";
 import { faker } from "@faker-js/faker";
 
-const BASE_URL = config.use?.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const authHeaders = (token = null) => ({
      "Content-Type": "application/json",

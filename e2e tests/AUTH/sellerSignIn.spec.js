@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { SELLER_SIGNIN } from "../../support/apiConstants.js";
 import { default_seller_signin } from "../../support/command.js";
-import config from "../../playwright.config.js";
-import fixtureData from "../../fixtures/AUTH/sellerSignIn.js";
+import fixtureData from "../../fixtures/AUTH/sellerSignInData.js";
 
-const BASE_URL = config.use?.BASE_URL;
+import { BASE_URL } from "../../playwright.config.js";
 
 const postSellerSignIn = async (request, data) => {
      const response = await request.post(`${BASE_URL}${SELLER_SIGNIN}`, {
