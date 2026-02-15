@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { ADMIN_LOGIN, SELLER_SIGNIN, SELLER_SIGNIN_FOR_STORE, ADMINS, FILES_PROFILES } from '../support/apiConstants.js';
 import adminLoginData from '../fixtures/AUTH/adminLoginData.js';
-import sellerSignInData from '../fixtures/AUTH/sellerSignIn.js';
+import sellerSignInData from '../fixtures/AUTH/sellerSignInData.js';
 import { faker } from '@faker-js/faker';
 import fs from 'fs';
 import path from 'path';
@@ -83,6 +83,32 @@ async function default_seller_signin(request, baseUrl = BASE_URL) {
   process.env.SELLER_ACCESS_TOKEN = accessToken;
   return accessToken;
 }
+
+async function default_seller_signin_for_update(request, baseUrl = BASE_URL) {
+  const { email, password } = sellerSignInData.jsonData[0];
+
+  const response = await request.post(`${baseUrl}${SELLER_SIGNIN}`, {
+    data: { email, password },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  expect(response.ok()).toBeTruthy();
+
+  const responseBody = await response.json();
+  expect(responseBody).toEqual(
+    expect.objectContaining({
+      accessToken: expect.any(String),
+      searchToken: expect.any(String),
+    }),
+  );
+
+  const accessToken = responseBody.accessToken;
+  process.env.SELLER_ACCESS_TOKEN = accessToken;
+  return accessToken;
+}
+
 
 async function seller_signin_for_staff_store(request, baseUrl = BASE_URL) {
   const storeId = 'gsso0e05ljljvf3jafnzfd51';

@@ -8,22 +8,27 @@ const authHeaders = () => ({
      "Content-Type": "application/json",
      Authorization: `Bearer ${process.env.SELLER_ACCESS_TOKEN}`,
 });
-const getCurrentSellerRequest = (request) =>
-     request.get(`${BASE_URL}${CURRENT_SELLER}`, {
+const getCurrentSellerRequest = (request, data) =>
+     request.patch(`${BASE_URL}${CURRENT_SELLER}`, {
           headers: authHeaders(),
+          data,
      });
-const getRequest = async (request, expectedStatus) => {
-     const response = await getCurrentSellerRequest(request);
+const getRequest = async (request, expectedStatus, data) => {
+     const response = await getCurrentSellerRequest(request, data);
      expect(response.status()).toBe(expectedStatus);
      return response.json();
 };
 
-test.describe.serial("Get Current Seller Test Suite", () => {
+test.describe.serial("Update Current Seller Test Suite", () => {
 
      //1.1
-     test("Get current seller with seller access token", async ({ request }) => {
+     test("update current seller with firstname and lastname", async ({ request }) => {
           await default_seller_signin(request, BASE_URL);
-          const responseBody = await getRequest(request, 200);
+          const data = {
+               firstName: faker.person.firstName(),
+               lastName: faker.person.lastName(),
+          };
+          const responseBody = await getRequest(request, 200, data);
           expect(responseBody).toEqual(
                expect.objectContaining({
                     id: expect.any(String),
