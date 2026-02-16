@@ -106,7 +106,7 @@ async function default_seller_signin_for_update(request, baseUrl = BASE_URL) {
   );
 
   const accessToken = responseBody.accessToken;
-  process.env.SELLER_ACCESS_TOKEN = accessToken;
+  process.env.DEFAULT_SELLER_ACCESS_TOKEN_FOR_UPDATE = accessToken;
   return accessToken;
 }
 

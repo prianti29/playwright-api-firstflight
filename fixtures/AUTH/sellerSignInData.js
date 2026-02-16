@@ -69,6 +69,11 @@ const testCases = {
           email: "' OR 1=1 --",
           password: VALID_PASSWORD,
      },
+     //Credentials for updateCurrentSeller
+     sellerAccount: {
+          email: "abc1@sharklasers.com",
+          password: "12345678",
+     },
 };
 
 // Export in original format for backward compatibility

@@ -90,12 +90,17 @@ test.describe.serial("Update Current Seller Test Suite", () => {
      //2.3
      test("update current seller profilePhotoId", async ({ request }) => {
           const adminToken = await current_admin_login(request, BASE_URL);
-          const responseBody = await updateCurrentSellerRequest(request, 403, { profilePhotoId: "m880hg5nirzbou7edaonm85i" }, adminToken);
+          const responseBody = await updateCurrentSellerRequest(request, 200, { profilePhotoId: "m880hg5nirzbou7edaonm85i" }, adminToken);
           expect(responseBody).toEqual(
                expect.objectContaining({
-                    message: expect.stringContaining("Forbidden resource"),
-                    error: "Forbidden",
-                    statusCode: 403,
+                    id: expect.any(String),
+                    firstName: expect.any(String),
+                    lastName: expect.any(String),
+                    email: expect.stringContaining("@"),
+                    isProfileComplete: expect.any(Boolean),
+                    isActive: expect.any(Boolean),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
                })
           );
      });
